@@ -284,7 +284,7 @@ struct DR_Panels: View {
                                         item.dmhead.device_model == nil ||
                                         item.dmhead.device_owner == nil
                                     {
-                                        Text("The bin is free to migrate")
+                                        Text("The bin is free to migrate.")
                                             .foregroundStyle(Color.green)
                                             .padding(.horizontal, 3)
                                             .background(Color.green.opacity(0.15))
