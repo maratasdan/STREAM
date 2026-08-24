@@ -14,6 +14,7 @@ struct CheckSession: View {
     
     @State private var openLogin: Bool = false
     @State private var openHome: Bool = false
+    @State private var openScalerHome: Bool = false
     
     @State private var rotation: Double = 0
     
@@ -61,6 +62,9 @@ struct CheckSession: View {
             .navigationDestination(isPresented: $openHome) {
                 RCV_Home()
             }
+            .navigationDestination(isPresented: $openScalerHome) {
+                Scaler_Home()
+            }
             .onAppear() {
                 checkLocalDB()
             }
@@ -73,9 +77,24 @@ struct CheckSession: View {
             print("NO SESSION")
             openLogin = true
         } else {
-            print("SESSION FOUND")
-            print(userdatatable[0].email)
-            openHome = true
+            
+//            if userdatatable[0].role == "scaler" {
+//                openScalerHome = true
+//            } else if userdatatable[0].role == "sheller" {
+//                openScalerHome = true
+//            } else {
+//                openHome = true
+//            }
+//            print("SESSION FOUND")
+//            print(userdatatable[0].email)
+            print(userdatatable[0].role)
+            
+            if userdatatable[0].role == "shift_lead" {
+                openHome = true
+            } else {
+                openScalerHome = true
+            }
+        
         }
     }
 }
