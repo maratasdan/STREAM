@@ -61,7 +61,7 @@ struct CheckSession: View {
                 Login()
             }
             .navigationDestination(isPresented: $openHome) {
-                RCV_Home()
+                WH_Dashboard    ()
             }
             .navigationDestination(isPresented: $openScalerHome) {
                 Scaler_Home()
@@ -103,7 +103,11 @@ struct CheckSession: View {
                 }
             }
         } else if UIDevice.current.userInterfaceIdiom == .phone {
-            openMobileLogin = true
+            if userdatatable.first?.role == "Warehouse Man" {
+                openHome = true
+            } else {
+                openMobileLogin = true
+            }
         }
         
         
