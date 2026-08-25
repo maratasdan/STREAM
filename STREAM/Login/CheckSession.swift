@@ -15,6 +15,7 @@ struct CheckSession: View {
     @State private var openLogin: Bool = false
     @State private var openHome: Bool = false
     @State private var openScalerHome: Bool = false
+    @State private var openMobileLogin: Bool = false
     
     @State private var rotation: Double = 0
     
@@ -65,6 +66,9 @@ struct CheckSession: View {
             .navigationDestination(isPresented: $openScalerHome) {
                 Scaler_Home()
             }
+            .navigationDestination(isPresented: $openMobileLogin) {
+                App_Login()
+            }
             .onAppear() {
                 checkLocalDB()
             }
@@ -73,29 +77,36 @@ struct CheckSession: View {
     }
    
     func checkLocalDB() {
-        if userdatatable.isEmpty {
-            print("NO SESSION")
-            openLogin = true
-        } else {
-            
-//            if userdatatable[0].role == "scaler" {
-//                openScalerHome = true
-//            } else if userdatatable[0].role == "sheller" {
-//                openScalerHome = true
-//            } else {
-//                openHome = true
-//            }
-//            print("SESSION FOUND")
-//            print(userdatatable[0].email)
-            print(userdatatable[0].role)
-            
-            if userdatatable[0].role == "shift_lead" {
-                openHome = true
-            } else {
-                openScalerHome = true
-            }
         
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            if userdatatable.isEmpty {
+                print("NO SESSION")
+                openLogin = true
+            } else {
+                
+    //            if userdatatable[0].role == "scaler" {
+    //                openScalerHome = true
+    //            } else if userdatatable[0].role == "sheller" {
+    //                openScalerHome = true
+    //            } else {
+    //                openHome = true
+    //            }
+    //            print("SESSION FOUND")
+    //            print(userdatatable[0].email)
+                
+                print(userdatatable[0].role)
+                
+                if userdatatable[0].role == "shift_lead" {
+                    openHome = true
+                } else {
+                    openScalerHome = true
+                }
+            }
+        } else if UIDevice.current.userInterfaceIdiom == .phone {
+            openMobileLogin = true
         }
+        
+        
     }
 }
 

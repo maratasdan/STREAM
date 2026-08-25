@@ -9,7 +9,7 @@ import SwiftUI
 import MSAL
 import SwiftData
 
-struct UserData: Codable {
+struct AppUserData: Codable {
     let userid: Int
     let jobTitle: String
     let email: String
@@ -18,16 +18,27 @@ struct UserData: Codable {
     let role: String
 }
 
-struct Login: View {
+struct App_Login: View {
     
     @Environment(\.modelContext) private var context
     
-    @State private var userdata: [UserData] = []
+    @State private var userdata: [AppUserData] = []
     
     @State private var goToregister: Bool = false
     @State private var email: String = ""
     
     @State private var goToCheckSession: Bool = false
+    
+    @State private var username: String = ""
+    @State private var password: String = ""
+    
+    @State private var openSheetCheckingAccount: Bool = false
+    @State private var openAppRegister: Bool = false
+    @State private var openAlertEmptyField: Bool = false
+    @State private var openWaitVerify: Bool = false
+    @State private var openWrongAccount: Bool = false
+    
+    @State private var rotation: Double = 0
     
     var body: some View {
         NavigationStack {
@@ -48,51 +59,59 @@ struct Login: View {
                         .scaledToFit()
                         .frame(width: 180)
                     
+                    VStack(spacing: 10) {
+                        ZStack {
+                            Rectangle()
+                                .frame(width: 350, height: 50)
+                                .glassEffect()
+                                .foregroundStyle(Color.clear)
+                            HStack {
+                                Image(systemName: "person.fill")
+                                TextField("Email Address", text: $username)
+                                    .frame(width: 290)
+                            }
+                        }
+                        ZStack {
+                            Rectangle()
+                                .frame(width: 350, height: 50)
+                                .glassEffect()
+                                .foregroundStyle(Color.clear)
+                            HStack {
+                                Image(systemName: "lock")
+                                SecureField("Password", text: $password)
+                                    .frame(width: 290)
+                            }
+                        }
+                    }
+                    
                     Button {
                         
-                        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                              let root = scene.windows.first?.rootViewController else {
-                            return
-                        }
                         
-                        AuthenticationManager.shared.signIn(from: root) { result in
-                            
-                            switch result {
-                                
-                            case .success(let auth):
-                                
-                                print(auth.account.username ?? "NA")
-                                
-                                checkIfAccountExist(username: auth.account.username ?? "NA")
-                                
-                            case .failure(let error):
-                                
-                                print(error)
-                                
-                            }
-                            
+                        openSheetCheckingAccount = true
+                        
+                        if username == "" || password == "" {
+                            openAlertEmptyField = true
+                        } else {
+                            openSheetCheckingAccount = true
+                            checkIfAccountExist(username: username, password: password)
                         }
                         
                     } label: {
                         
                         HStack(spacing: 15) {
                             
-                            Image("mslogo")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24, height: 24)
-                            
-                            Text("Sign in with Microsoft")
+                            Text("Login")
                                 .font(.headline)
-                                .foregroundStyle(.black)
+                                .foregroundStyle(.white)
+                                .bold()
                             
                         }
                         .frame(maxWidth: 330)
-                        .frame(height: 58)
+                        .frame(height: 38)
                     }
                     .buttonStyle(.glassProminent)
-                    .tint(Color.clear)
-                    .glassEffect()
+                    .tint(Color(hex: "#F25022"))
+                    .glassEffect(.regular)
                     
                     VStack(spacing: 6) {
                         
@@ -100,23 +119,67 @@ struct Login: View {
                             .font(.footnote)
                             .foregroundStyle(.white.opacity(0.75))
                             .multilineTextAlignment(.center)
+                            .frame(maxWidth: 360)
                         
-                        Text("Version 1.0.0")
+                        Text("Version 2.1.1")
                             .font(.caption2)
                             .foregroundStyle(.white.opacity(0.45))
                         
                     }
                     
-//                    Button("Go") {
-//                        checkIfAccountExist(username: "mariomaratasjr@stellarseedscorp.org")
-//                    }
-//                    .buttonStyle(.glassProminent)
-//                    .glassEffect()
-                    
                     Spacer()
                     
                 }
                 .padding(.horizontal,40)
+                
+                
+                .alert("Error", isPresented: $openAlertEmptyField) {
+                    
+                } message: {
+                    Text("Please fill up all the fields.")
+                }
+                
+                .alert("Error", isPresented: $openWrongAccount) {
+                    
+                } message: {
+                    Text("Invalid Account, Please try again.")
+                }
+                
+                .sheet(isPresented: $openSheetCheckingAccount) {
+                    VStack(spacing: 20) {
+                        
+                        // Loading Spinner
+                        Circle()
+                            .trim(from: 0.05, to: 0.75)
+                            .stroke(
+                                Color(hex: "#F25022"),
+                                style: StrokeStyle(
+                                    lineWidth: 4,
+                                    lineCap: .round
+                                )
+                            )
+                            .frame(width: 45, height: 45)
+                            .rotationEffect(.degrees(rotation))
+                            .onAppear {
+                                withAnimation(
+                                    .linear(duration: 1)
+                                    .repeatForever(autoreverses: false)
+                                ) {
+                                    rotation = 360
+                                }
+                            }
+                        
+                        Text("Checking account...")
+                            .font(.headline)
+                            .foregroundStyle(Color(hex: "#F25022"))
+                        
+                        Text("Make sure you are connected to the internet.")
+                            .font(.caption)
+                            .foregroundStyle(Color(hex: "#F25022").opacity(0.6))
+                    }
+                    .presentationDetents([.medium])
+//                    .interactiveDismissDisabled(true)
+                }
                 
             }
             .navigationDestination(isPresented: $goToregister) {
@@ -125,7 +188,15 @@ struct Login: View {
             .navigationDestination(isPresented: $goToCheckSession) {
                 CheckSession()
             }
+            .navigationDestination(isPresented: $openAppRegister) {
+                App_Register(emailEx: username)
+            }
+            .navigationDestination(isPresented: $openWaitVerify) {
+                App_WaitVerification()
+            }
             .navigationBarBackButtonHidden(true)
+            
+            
         }
         
     }
@@ -165,13 +236,14 @@ struct Login: View {
             }
     }
     
-    func checkIfAccountExist(username: String) {
-        var request = URLRequest(url: URL(string: "https://ops.stellarseedscorp.org/auth/check_account_exist_app.php?type=app")!)
+    func checkIfAccountExist(username: String, password: String) {
+        var request = URLRequest(url: URL(string: "https://ops.stellarseedscorp.org/auth/check_account_exist_app_mobile.php?type=app")!)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let body: [String: Any] = [
             "username": username,
+            "password": password
         ]
 
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
@@ -182,12 +254,17 @@ struct Login: View {
             print(String(data: data, encoding: .utf8) ?? "")
             
             if(String(data: data, encoding: .utf8)  == "No") {
-                email = username
-                goToregister = true
-                print("lalalal")
+                openAppRegister = true
+            } else if(String(data: data, encoding: .utf8)  == "Wrong Password") {
+                openWrongAccount = true
+            } else if(String(data: data, encoding: .utf8)  == "notver") {
+                openWaitVerify = true
+            } else if(String(data: data, encoding: .utf8)  == "empty") {
+                openWaitVerify = true
             } else {
+                print("Found")
                 do {
-                    let decoded = try JSONDecoder().decode([UserData].self, from: data)
+                    let decoded = try JSONDecoder().decode([AppUserData].self, from: data)
 
                     DispatchQueue.main.async {
                         userdata = decoded
@@ -195,6 +272,7 @@ struct Login: View {
                         if let userx = decoded.first {
                             saveUserLocalDB(useridx: userx.userid, emailx: userx.email, firstnamex: userx.firstname, lastnamex: userx.lastname, jobTitlex: userx.jobTitle, rolex: userx.role)
                         }
+                        
                     }
                 
                 } catch {
@@ -207,5 +285,5 @@ struct Login: View {
 }
 
 #Preview {
-    Login()
+    App_Login()
 }

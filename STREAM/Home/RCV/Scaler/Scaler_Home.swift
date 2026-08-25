@@ -15,6 +15,7 @@ struct Scaler_Home: View {
     @Environment(\.modelContext) private var context
     
     @State private var goHome: Bool = false
+    @State private var openAlert: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -32,11 +33,21 @@ struct Scaler_Home: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
-                        logout()
+                        openAlert = true
                     }) {
                         Image(systemName: "arrowtriangle.left.fill")
                     }
                 }
+            }
+            .alert("Confirmation", isPresented: $openAlert) {
+                Button("Cancel", role: .close) {
+                    openAlert = false
+                }
+                Button("Confirm", role: .confirm) {
+                    logout()
+                }
+            } message: {
+                Text("Are you sure to logout?")
             }
         }
         .navigationDestination(isPresented: $goHome) {

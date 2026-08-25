@@ -87,7 +87,7 @@ struct Login: View {
                                 .foregroundStyle(.black)
                             
                         }
-                        .frame(maxWidth: 380)
+                        .frame(maxWidth: 330)
                         .frame(height: 58)
                     }
                     .buttonStyle(.glassProminent)
