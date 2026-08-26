@@ -16,6 +16,7 @@ struct CheckSession: View {
     @State private var openHome: Bool = false
     @State private var openScalerHome: Bool = false
     @State private var openMobileLogin: Bool = false
+    @State private var openShiftHome: Bool = false
     
     @State private var rotation: Double = 0
     
@@ -57,11 +58,14 @@ struct CheckSession: View {
                         .foregroundStyle(.white.opacity(0.6))
                 }
             }
+            .navigationDestination(isPresented: $openShiftHome) {
+                RCV_Home()
+            }
             .navigationDestination(isPresented: $openLogin) {
                 Login()
             }
             .navigationDestination(isPresented: $openHome) {
-                WH_Dashboard    ()
+                WH_Dashboard()
             }
             .navigationDestination(isPresented: $openScalerHome) {
                 Scaler_Home()
@@ -78,7 +82,11 @@ struct CheckSession: View {
    
     func checkLocalDB() {
         
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        print(UIDevice.current.userInterfaceIdiom)
+        
+        let isIpad = UIDevice.current.userInterfaceIdiom == .pad
+        
+        if isIpad {
             if userdatatable.isEmpty {
                 print("NO SESSION")
                 openLogin = true
@@ -97,16 +105,16 @@ struct CheckSession: View {
                 print(userdatatable[0].role)
                 
                 if userdatatable[0].role == "shift_lead" {
-                    openHome = true
+                    openShiftHome = true
                 } else {
                     openScalerHome = true
                 }
             }
         } else if UIDevice.current.userInterfaceIdiom == .phone {
             if userdatatable.first?.role == "Warehouse Man" {
-                openHome = true
-            } else {
                 openMobileLogin = true
+            } else {
+                openHome = true
             }
         }
         
