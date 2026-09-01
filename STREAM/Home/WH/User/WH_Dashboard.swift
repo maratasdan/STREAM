@@ -153,6 +153,7 @@ struct WH_Dashboard: View {
         guard let data = codedata.data(using: .utf8) else {
             return
         }
+        
         do {
             let decoded = try JSONDecoder().decode(QRData.self, from: data)
 
@@ -191,7 +192,7 @@ struct WH_Dashboard: View {
 
             if let data = data {
                 
-                print(String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines))
+                print(String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "")
                 
                 if String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) == "no records" {
                     goToConfirmTag = true

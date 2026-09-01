@@ -41,7 +41,7 @@ struct DR_ConfirmTopup: View {
             List {
                 Section("Topup Details") {
                     VStack(alignment: .leading) {
-                        Text("Lot Number")
+                        Text("Lot Number \(rhid)")
                             .font(.footnote)
                             .foregroundStyle(Color.secondary)
                         Text("\(topupData.first?.lot_number ?? "NA")")

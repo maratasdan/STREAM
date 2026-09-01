@@ -344,37 +344,47 @@ struct DR_Panels: View {
                         }
                         .swipeActions(edge: .trailing) {
                             
-                            if item.dmhead.status == "4_T" {
+                            
+                            if item.dmhead.deivice_id == nil {
+                                
                                 Button(action: {
-                                    crhid = item.dmhead.rhid
-                                    openConfirmAlert = true
+                                    migrateData(dhid: item.dmhead.dhid)
+                                    saveDataLocal(dhid: item.dmhead.dhid)
                                 }) {
-                                    Image(systemName: "square.and.arrow.down.fill")
-                                        .tint(Color.yellow)
+                                    Image(systemName: "icloud.and.arrow.down.fill")
+                                        .tint(Color.blue)
                                 }
+                                
+                                Button(action: {
+                                    openShutOffMCAlert = true
+                                    currentrhid = item.dmhead.rhid
+                                }) {
+                                    Image(systemName: "power.circle.fill")
+                                        .tint(Color.red)
+                                }
+                                
                             } else {
-                                if item.dmhead.deivice_id == nil {
-                                    
+                                
+                                if item.dmhead.status == "4_T" {
                                     Button(action: {
-                                        migrateData(dhid: item.dmhead.dhid)
-                                        saveDataLocal(dhid: item.dmhead.dhid)
+                                        let rhid = item.dmhead.rhid
+                                        crhid = rhid
+                                        
+                                        print("CRHID SET:", crhid)
+                                        
+                                        DispatchQueue.main.async {
+                                            openConfirmAlert = true
+                                        }
                                     }) {
-                                        Image(systemName: "icloud.and.arrow.down.fill")
-                                            .tint(Color.blue)
+                                        Image(systemName: "square.and.arrow.down.fill")
+                                            .tint(Color.yellow)
                                     }
-                                    
-                                    Button(action: {
-                                        openShutOffMCAlert = true
-                                        currentrhid = item.dmhead.rhid
-                                    }) {
-                                        Image(systemName: "power.circle.fill")
-                                            .tint(Color.red)
-                                    }
-                                    
                                 } else {
                                     
                                 }
+                                
                             }
+                            
                         }
                     }
                 }
@@ -586,12 +596,9 @@ struct DR_Panels: View {
                 return
             }
 
-            if let data = data {
-                loadData()
-                loadDrDataOnine()
-//                print(String(data: data, encoding: .utf8) ?? "")
-                
-            }
+            loadData()
+            loadDrDataOnine()
+        
         }.resume()
     }
     

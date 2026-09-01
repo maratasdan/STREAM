@@ -59,7 +59,7 @@ struct LC1: View {
         }
         
         .navigationDestination(isPresented: $goToLC2) {
-            LC1(rhid: rhid)
+            LC2(rhid: rhid)
         }
     }
     

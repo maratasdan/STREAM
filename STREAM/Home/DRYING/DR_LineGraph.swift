@@ -101,20 +101,20 @@ struct DR_LineGraph: View {
     }
 
     var body: some View {
-
         VStack(spacing: 15) {
 
             if let item = selectedMonitoring {
-
                 VStack(alignment: .leading, spacing: 8) {
-
-                    Text(displayFormatter.string(from: formatter.date(from: item.date) ?? Date()))
-                        .font(.headline)
+                    Text(
+                        displayFormatter.string(
+                            from: formatter.date(from: item.date) ?? Date()
+                        )
+                    )
+                    .font(.headline)
 
                     Divider()
 
                     HStack {
-
                         Label("Top", systemImage: "thermometer.high")
                             .foregroundStyle(.red)
 
@@ -122,11 +122,9 @@ struct DR_LineGraph: View {
 
                         Text("\(item.upper)°C")
                             .bold()
-
                     }
 
                     HStack {
-
                         Label("Bottom", systemImage: "thermometer.low")
                             .foregroundStyle(.blue)
 
@@ -134,61 +132,50 @@ struct DR_LineGraph: View {
 
                         Text("\(item.lower)°C")
                             .bold()
-
                     }
-
                 }
                 .padding()
                 .background(.ultraThinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 15))
                 .padding(.horizontal)
-
             }
 
-            ScrollView(.horizontal) {
+            GeometryReader { geometry in
+                ScrollView(.horizontal) {
+                    Chart(chartData) { series in
+                        ForEach(series.points) { point in
+                            LineMark(
+                                x: .value("Time", point.date),
+                                y: .value("Temperature", point.value)
+                            )
+                            .interpolationMethod(.linear)
 
-                Chart(chartData) { series in
+                            PointMark(
+                                x: .value("Time", point.date),
+                                y: .value("Temperature", point.value)
+                            )
+                        }
+                        .foregroundStyle(by: .value("Series", series.type))
+                        .symbol(by: .value("Series", series.type))
 
-                    ForEach(series.points) { point in
-
-                        LineMark(
-                            x: .value("Time", point.date),
-                            y: .value("Temperature", point.value)
-                        )
-                        .interpolationMethod(.linear)
-
-                        PointMark(
-                            x: .value("Time", point.date),
-                            y: .value("Temperature", point.value)
-                        )
-
+                        if let selectedDate {
+                            RuleMark(
+                                x: .value("Selected", selectedDate)
+                            )
+                            .foregroundStyle(.gray.opacity(0.5))
+                        }
                     }
-                    .foregroundStyle(by: .value("Series", series.type))
-                    .symbol(by: .value("Series", series.type))
-
-                    if let selectedDate {
-
-                        RuleMark(
-                            x: .value("Selected", selectedDate)
+                    .chartXSelection(value: $selectedDate)
+                    .frame(
+                        width: max(
+                            CGFloat(filtereddrmonitoring.count) * 70,
+                            geometry.size.width
                         )
-                        .foregroundStyle(.gray.opacity(0.5))
-
-                    }
-
-                }
-                .chartXSelection(value: $selectedDate)
-                .frame(
-                    width: max(
-                        CGFloat(filtereddrmonitoring.count) * 70,
-                        UIScreen.main.bounds.width
                     )
-                )
-                .padding()
-
+                    .padding()
+                }
             }
-
         }
-
     }
 }
 

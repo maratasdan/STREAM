@@ -64,12 +64,6 @@ struct DR_StartDryingReview: View {
                         Text("\(item.estimated_end)")
                             .font(.title2)
                     }
-                    VStack(alignment: .leading) {
-                        Text("Est. Drying End")
-                            .font(.footnote)
-                        Text("\(deviceID)")
-                            .font(.title2)
-                    }
                 }
                 
                 Section {
@@ -116,7 +110,6 @@ struct DR_StartDryingReview: View {
                 DispatchQueue.main.async {
                     startdryingpreview = [result]
                 }
-
             } catch {
                 print(error)
                 print(String(data: data, encoding: .utf8) ?? "")
@@ -127,8 +120,9 @@ struct DR_StartDryingReview: View {
     }
     
     func insertDataDP(rhid: String) {
-        
-        guard let url = URL(string: "https://ops.stellarseedscorp.org/App/DR/confirm_drying.php") else { return }
+        guard let url = URL(string: "https://ops.stellarseedscorp.org/App/DR/confirm_drying.php") else {
+            return
+        }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -142,22 +136,25 @@ struct DR_StartDryingReview: View {
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         URLSession.shared.dataTask(with: request) { data, response, error in
+
             if let error = error {
                 print(error.localizedDescription)
                 return
             }
 
             if let data = data {
-                
-                let dhid = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "NA"
-                
+                let dhid = String(data: data, encoding: .utf8)?
+                    .trimmingCharacters(in: .whitespacesAndNewlines) ?? "NA"
+
                 print("Drying...\(dhid)")
-                
+
+                DispatchQueue.main.async {
+                    dismiss()
+                }
             }
-            
+
         }.resume()
     }
-
 }
 
 #Preview {

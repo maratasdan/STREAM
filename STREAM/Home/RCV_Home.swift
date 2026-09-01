@@ -195,6 +195,10 @@ struct RCV_Home: View {
                     VStack {
                         
                         if pageSelection == "1" {
+                            Dashboard()
+                        } else
+                        
+                        if pageSelection == "2" {
                             VStack {
                                 HStack(spacing: 20) {
                                     VStack {
@@ -361,9 +365,6 @@ struct RCV_Home: View {
                                 }
                             }
                             .padding()
-                            
-                        } else if pageSelection == "2" {
-                            Dashboard()
                         } else if pageSelection == "3" {
                             CompanyWebsite()
                         } else if pageSelection == "4" {

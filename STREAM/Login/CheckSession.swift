@@ -86,6 +86,8 @@ struct CheckSession: View {
         
         let isIpad = UIDevice.current.userInterfaceIdiom == .pad
         
+        print(isIpad)
+        
         if isIpad {
             if userdatatable.isEmpty {
                 print("NO SESSION")
@@ -110,12 +112,20 @@ struct CheckSession: View {
                     openScalerHome = true
                 }
             }
-        } else if UIDevice.current.userInterfaceIdiom == .phone {
-            if userdatatable.first?.role == "Warehouse Man" {
+        } else {
+            
+            if userdatatable.isEmpty {
                 openMobileLogin = true
             } else {
                 openHome = true
             }
+            
+//            if userdatatable.first?.role == "Warehouse Man" {
+//                
+//            } else {
+//                
+//            }
+            
         }
         
         

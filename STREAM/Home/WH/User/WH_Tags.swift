@@ -7,13 +7,18 @@
 
 import SwiftUI
 
-struct JBTags: Codable {
-    let tagid: String
-    let lotno: String
-    let jbno: String
-    let kg: String?
-    let sessionid: String?
-    let status: String?
+struct JBTags: Codable, Identifiable {
+    
+    var id: String {
+        tagid
+    }
+    
+    var tagid: String
+    var lotno: String
+    var jbno: String
+    var kg: String?
+    var sessionid: String?
+    var status: String?
 }
 
 struct WH_Tags: View {
@@ -108,7 +113,7 @@ struct WH_Tags: View {
     }
     
     func getTags(lotno: String) {
-        guard let url = URL(string: "https://ops.stellarseedscorp.org/App/Warehouse/get_tags.php") else { return }
+        guard let url = URL(string: "https://ops.stellarseedscorp.org/App/Warehouse/get_tags.php?lotnumber=\(lotno)") else { return }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -121,7 +126,7 @@ struct WH_Tags: View {
 
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
-        URLSession.shared.dataTask(with: url) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
             
             guard let data = data else { return }
 	
@@ -131,6 +136,7 @@ struct WH_Tags: View {
                 jbtags = result
 
             } catch {
+                print(data)
                 print(error)
             }
 

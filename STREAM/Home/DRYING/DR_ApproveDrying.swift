@@ -91,10 +91,12 @@ struct DR_ApproveDrying: View {
                 
                 DispatchQueue.main.async {
                     approvedryinglist = result
+                    print(result)
+                    print("--------------------------")
                 }
                 
             } catch {
-                print("Err")
+                print(error)
             }
         }
         .resume()

@@ -108,7 +108,7 @@ struct DR_Panel: View {
                                                         .frame(width: 30, height: 30)
                                                         .foregroundColor(Color.red)
                                                         .symbolEffect(.pulse)
-                                                    Text("\(item.binid ?? "NA")")
+                                                    Text("\(item.binid)")
                                                         .font(.title)
                                                         .foregroundColor(Color(hex: "#0041BA"))
                                                         .bold()
