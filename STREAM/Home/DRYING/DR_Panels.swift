@@ -156,7 +156,7 @@ struct DR_Panels: View {
                                         .foregroundStyle(.orange)
                                 }
                                 VStack(alignment: .leading) {
-                                    Text("Bin \(item.dmhead.bin_id)")
+                                    Text("\(item.dmhead.bin_id)")
                                         .font(.title)
                                         .bold()
                                     Text("ID: \(item.dmhead.dhid)")
@@ -179,7 +179,7 @@ struct DR_Panels: View {
                                                 .foregroundStyle(.blue)
                                         }
                                         VStack(alignment: .leading) {
-                                            Text("\(item.dmhead.initial_mc)")
+                                            Text(String(format: "%.2f", Double(item.dmhead.initial_mc) ?? 0.0))
                                                 .bold()
                                             Text("Inital MC")
                                                 .foregroundStyle(Color.secondary)

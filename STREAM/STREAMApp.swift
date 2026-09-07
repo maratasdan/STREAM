@@ -21,7 +21,10 @@ struct STREAMApp: App {
         WindowGroup {
 //            Registration(username: "dan.scaler@stellarseedscorp.org")
 //            Login()
+            
             CheckSession()
+            
+//              DR_Grid()
 //            DR_DMR()
 //            RCV_Home()
 //            DR_Panel()

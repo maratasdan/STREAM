@@ -7,18 +7,13 @@
 
 import SwiftUI
 
-struct JBTags: Codable, Identifiable {
-    
-    var id: String {
-        tagid
-    }
-    
-    var tagid: String
-    var lotno: String
-    var jbno: String
-    var kg: String?
-    var sessionid: String?
-    var status: String?
+struct JBTags: Codable {
+    let tagid: String
+    let lotno: String
+    let jbno: String
+    let kg: String?
+    let sessionid: String?
+    let status: String?
 }
 
 struct WH_Tags: View {
@@ -32,43 +27,60 @@ struct WH_Tags: View {
     
     var body: some View {
         NavigationStack {
-            List(Array(jbtags.enumerated()), id: \.element.tagid) { index, item in
-                if item.status == "1" {
-                    HStack {
-                        ZStack {
-                            Rectangle()
-                                .frame(width: 40, height: 40)
-                                .cornerRadius(10)
-                                .foregroundStyle(Color.green.opacity(0.15))
-                            Text("\(index + 1)")
-                                .bold()
-                        }
-                        VStack(alignment: .leading) {
-                            Text("\(item.jbno)")
-                            Text("Quantity: \(item.kg ?? "0") KG")
-                                .font(.footnote)
-                                .foregroundStyle(Color.secondary)
-                        }
-                        Spacer()
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(Color.green)
-                    }
-                } else {
-                    NavigationLink(destination: WH_Tags_Scan(tagid: item.tagid, sessionid: item.sessionid ?? "")) {
+            List {
+                ForEach(Array(jbtags.enumerated()), id: \.element.tagid) { index, item in
+                    
+                    if item.status == "1" {
                         HStack {
                             ZStack {
                                 Rectangle()
                                     .frame(width: 40, height: 40)
                                     .cornerRadius(10)
-                                    .foregroundStyle(Color.red.opacity(0.15))
+                                    .foregroundStyle(Color.green.opacity(0.15))
+
                                 Text("\(index + 1)")
                                     .bold()
                             }
+
                             VStack(alignment: .leading) {
-                                Text("\(item.jbno)")
+                                Text(item.jbno)
+
                                 Text("Quantity: \(item.kg ?? "0") KG")
                                     .font(.footnote)
-                                    .foregroundStyle(Color.secondary)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Spacer()
+
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                        }
+
+                    } else {
+                        NavigationLink(
+                            destination: WH_Tags_Scan(
+                                tagid: item.tagid,
+                                sessionid: item.sessionid ?? ""
+                            )
+                        ) {
+                            HStack {
+                                ZStack {
+                                    Rectangle()
+                                        .frame(width: 40, height: 40)
+                                        .cornerRadius(10)
+                                        .foregroundStyle(Color.red.opacity(0.15))
+
+                                    Text("\(index + 1)")
+                                        .bold()
+                                }
+
+                                VStack(alignment: .leading) {
+                                    Text(item.jbno)
+
+                                    Text("Quantity: \(item.kg ?? "0") KG")
+                                        .font(.footnote)
+                                        .foregroundStyle(.secondary)
+                                }
                             }
                         }
                     }
@@ -108,35 +120,40 @@ struct WH_Tags: View {
             }
         }
         .onAppear() {
-            getTags(lotno: lotno)
+            getTagsx(lotno: lotno)
+            print("lotno: \(lotno)")
         }
     }
     
-    func getTags(lotno: String) {
-        guard let url = URL(string: "https://ops.stellarseedscorp.org/App/Warehouse/get_tags.php?lotnumber=\(lotno)") else { return }
+    func getTagsx(lotno: String) {
+        guard let url = URL(string: "https://ops.stellarseedscorp.org/App/Warehouse/get_tags.php") else {
+            return
+        }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body = [
-            "lotnumber": lotno,
-            "type": "1"
-        ] as [String : Any]
+        let body = "lotnumber=\(lotno)"
 
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        request.httpBody = body.data(using: .utf8)
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
 
         URLSession.shared.dataTask(with: request) { data, response, error in
-            
+
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
+
             guard let data = data else { return }
-	
+
             do {
                 let result = try JSONDecoder().decode([JBTags].self, from: data)
-                print(result)
-                jbtags = result
 
+                DispatchQueue.main.async {
+                    self.jbtags = result
+                }
             } catch {
-                print(data)
                 print(error)
             }
 

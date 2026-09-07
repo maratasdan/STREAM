@@ -51,7 +51,7 @@ struct DR_CurrentPanels: View {
                                         .foregroundStyle(.orange)
                                 }
                                 VStack(alignment: .leading) {
-                                    Text("Bin \(item.bin_id)")
+                                    Text("\(item.bin_id)")
                                         .font(.title)
                                         .bold()
                                     Text("ID: \(item.dhid)")

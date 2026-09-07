@@ -198,6 +198,8 @@ struct WH_Dashboard: View {
                     goToConfirmTag = true
                 } else if String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) == "Exist" {
                     goToTags = true
+                } else if String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) == "Exist3" {
+                    goToTags = true
                 } else {
                     
                 }

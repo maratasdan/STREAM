@@ -14,6 +14,12 @@ struct DR_Nav: View {
     var body: some View {
         NavigationStack {
             TabView {
+                DR_Grid()
+                    .tabItem {
+                        //                    Image(systemName: "")
+                        //                        .tint(Color.orange)
+                        Label("", systemImage: "square.grid.2x2")
+                    }
                 DR_Panels()
                     .tabItem {
                         //                    Image(systemName: "")

@@ -71,10 +71,7 @@ struct WH_Tags_Scan: View {
                 showAlertError = true
             } else {
                 saveTagandCheck(tagid: tagid, jbno: decoded.jbno, kg: decoded.kg)
-            }
-            
-//            checkifexist(lotnumber: decoded.lotno, rhid: decoded.rhid)
-            
+            }            
            
        } catch {
            print("❌ Invalid QR:", error)
