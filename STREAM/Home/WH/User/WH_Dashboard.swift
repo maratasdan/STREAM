@@ -113,6 +113,7 @@ struct WH_Dashboard: View {
                             }
                         }
                     }
+                    
                 }
             }
             .sheet(isPresented: $showScanner) {

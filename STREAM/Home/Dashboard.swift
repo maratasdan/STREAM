@@ -28,6 +28,12 @@ struct Dashboard: View {
     @State private var goToWarehouse: Bool = false
     @State private var goToTruckers: Bool = false
     
+    @State private var RHCT: String = "0"
+    @State private var RHWT: String = "0"
+    
+    @State private var DRCT: String = "0"
+    @State private var DRWT: String = "0"
+    
     var body: some View {
         NavigationStack {
             ScrollView(.horizontal, showsIndicators: true) {
@@ -152,6 +158,13 @@ struct Dashboard: View {
                         goToR_RMF = true
                         print("Hey")
                     }
+                    .contextMenu {
+                        Button(action: {
+                            
+                        }) {
+                            Label("Add", systemImage: "plus")
+                        }
+                    }
                     
 //                    VStack {
 //                        HStack {
@@ -194,7 +207,7 @@ struct Dashboard: View {
                             HStack {
                                 Text("C/T")
                                 Spacer()
-                                Text("0.05 Days")
+                                Text("\(RHCT) t/h")
                                     .bold()
                             }
                             
@@ -203,7 +216,7 @@ struct Dashboard: View {
                             HStack {
                                 Text("W/T")
                                 Spacer()
-                                Text("2 Hours")
+                                Text("\(RHWT) m/b")
                                     .bold()
                             }
                             
@@ -295,7 +308,7 @@ struct Dashboard: View {
                             HStack {
                                 Text("C/T")
                                 Spacer()
-                                Text("5 Days")
+                                Text("\(DRCT) Days")
                                     .bold()
                             }
                             
@@ -304,7 +317,7 @@ struct Dashboard: View {
                             HStack {
                                 Text("W/T")
                                 Spacer()
-                                Text("2 Hours")
+                                Text("\(DRWT) Hours")
                                     .bold()
                             }
                             
@@ -900,7 +913,87 @@ struct Dashboard: View {
                 TR_Home()
             }
         }
+        .onAppear() {
+            
+        }
+        .task {
+            while !Task.isCancelled {
+                getDataDash()
+                getDataRHWT()
+                getDataDRCT()
+                getDataDRWT()
+                try? await Task.sleep(for: .seconds(1))
+            }
+        }
         
+    }
+    
+    func getDataDash() {
+        guard let url = URL(string: "https://ops.stellarseedscorp.org/App/Dashboard/data.php?optype=RH&type=1") else { return }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
+
+            if let data = data {
+                
+                DispatchQueue.main.async {
+                    RHCT = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "NA"
+                }
+            }
+            
+        }.resume()
+    }
+    
+    func getDataRHWT() {
+        guard let url = URL(string: "https://ops.stellarseedscorp.org/App/Dashboard/data.php?optype=RH&type=2") else { return }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
+
+            if let data = data {
+                
+                DispatchQueue.main.async {
+                    RHWT = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "NA"
+                }
+            }
+            
+        }.resume()
+    }
+    
+    func getDataDRCT() {
+        guard let url = URL(string: "https://ops.stellarseedscorp.org/App/Dashboard/data.php?optype=DR&type=1") else { return }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+                
+            if let data = data {
+                DispatchQueue.main.async {
+                    DRCT = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "NA"
+                }
+            }
+            
+        }
+        .resume()
+    }
+    
+    func getDataDRWT() {
+        guard let url = URL(string: "https://ops.stellarseedscorp.org/App/Dashboard/data.php?optype=DR&type=2") else { return }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+                
+            if let data = data {
+                DispatchQueue.main.async {
+                    DRWT = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "NA"
+                }
+            }
+            
+        }
+        .resume()
     }
 }
 
