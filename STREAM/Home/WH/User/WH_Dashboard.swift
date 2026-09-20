@@ -18,7 +18,6 @@ struct QRData: Codable {
     let api: String
 }
 
-
 struct WH_Dashboard: View {
     
     @Environment(\.modelContext) private var context
@@ -34,6 +33,7 @@ struct WH_Dashboard: View {
     
     @State private var goToConfirmTag: Bool = false
     @State private var goToTags: Bool = false
+    @State private var goToConfirmTransfer: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -134,6 +134,9 @@ struct WH_Dashboard: View {
         .navigationDestination(isPresented: $goToTags) {
             WH_Tags(lotno: qrdata?.lotno ?? "")
         }
+        .navigationDestination(isPresented: $goToConfirmTransfer) {
+            WH_ConfirmTransfer(lotno: qrdata?.lotno ?? "", rhid: qrdata?.rhid ?? 0, processtype: qrdata?.type ?? "", jbno: qrdata?.jbno ?? "", kg: qrdata?.kg ?? 0, tagid: qrdata?.tagid ?? 0)
+        }
         .toolbar {
             ToolbarItem(placement: .bottomBar) {
                 Button(action: {
@@ -199,8 +202,10 @@ struct WH_Dashboard: View {
                     goToConfirmTag = true
                 } else if String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) == "Exist" {
                     goToTags = true
+//                    goToConfirmTransfer = true
                 } else if String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) == "Exist3" {
-                    goToTags = true
+//                    goToTags = true
+                    goToConfirmTransfer = true
                 } else {
                     
                 }

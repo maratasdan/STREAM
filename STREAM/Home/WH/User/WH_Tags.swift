@@ -16,11 +16,22 @@ struct JBTags: Codable {
     let status: String?
 }
 
+struct BatchDataCNTags: Codable, Identifiable {
+    let id: String
+    let sessionid: String
+    let lotnumber: String
+    let rhid: String
+    let date_created: String
+    let wh: String
+    let status: String
+}
+
 struct WH_Tags: View {
     
     let lotno: String
     
     @State private var jbtags: [JBTags] = []
+    @State private var batchdatacntags: [BatchDataCNTags] = []
     
     @State private var showAlertConfirmTransfer: Bool = false
     @State private var gotohome: Bool = false
@@ -28,6 +39,7 @@ struct WH_Tags: View {
     var body: some View {
         NavigationStack {
             List {
+                Text(batchdatacntags.first?.sessionid ?? "NA DAN")
                 ForEach(Array(jbtags.enumerated()), id: \.element.tagid) { index, item in
                     
                     if item.status == "1" {
@@ -57,29 +69,31 @@ struct WH_Tags: View {
                         }
 
                     } else {
-                        NavigationLink(
-                            destination: WH_Tags_Scan(
-                                tagid: item.tagid,
-                                sessionid: item.sessionid ?? ""
-                            )
-                        ) {
-                            HStack {
-                                ZStack {
-                                    Rectangle()
-                                        .frame(width: 40, height: 40)
-                                        .cornerRadius(10)
-                                        .foregroundStyle(Color.red.opacity(0.15))
+                        if item.status == "0" {
+                            NavigationLink(
+                                destination: WH_Tags_Scan(
+                                    tagid: item.tagid,
+                                    sessionid: batchdatacntags.first?.sessionid ?? ""
+                                )
+                            ) {
+                                HStack {
+                                    ZStack {
+                                        Rectangle()
+                                            .frame(width: 40, height: 40)
+                                            .cornerRadius(10)
+                                            .foregroundStyle(Color.red.opacity(0.15))
 
-                                    Text("\(index + 1)")
-                                        .bold()
-                                }
+                                        Text("\(index + 1)")
+                                            .bold()
+                                    }
 
-                                VStack(alignment: .leading) {
-                                    Text(item.jbno)
+                                    VStack(alignment: .leading) {
+                                        Text(item.jbno)
 
-                                    Text("Quantity: \(item.kg ?? "0") KG")
-                                        .font(.footnote)
-                                        .foregroundStyle(.secondary)
+                                        Text("Quantity: \(item.kg ?? "0") KG")
+                                            .font(.footnote)
+                                            .foregroundStyle(.secondary)
+                                    }
                                 }
                             }
                         }
@@ -121,6 +135,7 @@ struct WH_Tags: View {
         }
         .onAppear() {
             getTagsx(lotno: lotno)
+            getBatchInfo(lotnumber: lotno)
             print("lotno: \(lotno)")
         }
     }
@@ -148,7 +163,10 @@ struct WH_Tags: View {
             guard let data = data else { return }
 
             do {
+                
                 let result = try JSONDecoder().decode([JBTags].self, from: data)
+                
+                print("tagsdatareq: \(result)")
 
                 DispatchQueue.main.async {
                     self.jbtags = result
@@ -189,6 +207,43 @@ struct WH_Tags: View {
                 }
             }
             
+        }.resume()
+    }
+    
+    func getBatchInfo(lotnumber: String) {
+
+        guard let encodedLot = lotnumber.addingPercentEncoding(
+            withAllowedCharacters: .urlQueryAllowed
+        ) else { return }
+
+        let urlString = "https://ops.stellarseedscorp.org/App/Warehouse/v2/check_batch.php?lotno=\(encodedLot)"
+
+        guard let url = URL(string: urlString) else { return }
+
+        URLSession.shared.dataTask(with: url) { data, response, error in
+
+            if let error = error {
+                print("Network error:", error.localizedDescription)
+                return
+            }
+
+            guard let data = data else { return }
+
+            do {
+                let result = try JSONDecoder().decode(
+                    [BatchDataCNTags].self,
+                    from: data
+                )
+
+                DispatchQueue.main.async {
+                    self.batchdatacntags = result
+                }
+
+            } catch {
+                print("Decoding error:", error)
+                print(String(data: data, encoding: .utf8) ?? "")
+            }
+
         }.resume()
     }
 }
