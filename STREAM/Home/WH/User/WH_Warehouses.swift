@@ -11,7 +11,7 @@ struct WH_Warehouses: View {
     var body: some View {
         NavigationStack {
             List {
-                NavigationLink(destination: WH_Dashboard()) {
+                NavigationLink(destination: WH_WHList(wh: "1")) {
                     HStack {
                         ZStack {
                             Rectangle()
@@ -28,7 +28,7 @@ struct WH_Warehouses: View {
                         }
                     }
                 }
-                NavigationLink(destination: WH_Dashboard()) {
+                NavigationLink(destination: WH_WHList(wh: "2")) {
                     HStack {
                         ZStack {
                             Rectangle()
@@ -45,7 +45,7 @@ struct WH_Warehouses: View {
                         }
                     }
                 }
-                NavigationLink(destination: WH_Dashboard()) {
+                NavigationLink(destination: WH_WHList(wh: "3")) {
                     HStack {
                         ZStack {
                             Rectangle()
@@ -62,7 +62,7 @@ struct WH_Warehouses: View {
                         }
                     }
                 }
-                NavigationLink(destination: WH_Dashboard()) {
+                NavigationLink(destination: WH_WHList(wh: "4")) {
                     HStack {
                         ZStack {
                             Rectangle()

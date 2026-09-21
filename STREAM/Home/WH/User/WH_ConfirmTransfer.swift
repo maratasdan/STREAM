@@ -94,7 +94,7 @@ func getBatchInfo(lotnumber: String) {
         withAllowedCharacters: .urlQueryAllowed
     ) else { return }
 
-    let urlString = "https://ops.stellarseedscorp.org/App/Warehouse/v2/check_batch.php?lotno=\(encodedLot)"
+    let urlString = "https://ops.stellarseedscorp.org/App/Warehouse/v2/check_batch_tf.php?lotno=\(encodedLot)"
 
     guard let url = URL(string: urlString) else { return }
 

@@ -35,11 +35,11 @@ struct WH_Tags: View {
     
     @State private var showAlertConfirmTransfer: Bool = false
     @State private var gotohome: Bool = false
+    @State private var goToFillInfo: Bool = false
     
     var body: some View {
         NavigationStack {
             List {
-                Text(batchdatacntags.first?.sessionid ?? "NA DAN")
                 ForEach(Array(jbtags.enumerated()), id: \.element.tagid) { index, item in
                     
                     if item.status == "1" {
@@ -69,31 +69,29 @@ struct WH_Tags: View {
                         }
 
                     } else {
-                        if item.status == "0" {
-                            NavigationLink(
-                                destination: WH_Tags_Scan(
-                                    tagid: item.tagid,
-                                    sessionid: batchdatacntags.first?.sessionid ?? ""
-                                )
-                            ) {
-                                HStack {
-                                    ZStack {
-                                        Rectangle()
-                                            .frame(width: 40, height: 40)
-                                            .cornerRadius(10)
-                                            .foregroundStyle(Color.red.opacity(0.15))
+                        NavigationLink(
+                            destination: WH_Tags_Scan(
+                                tagid: item.tagid,
+                                sessionid: batchdatacntags.first?.sessionid ?? ""
+                            )
+                        ) {
+                            HStack {
+                                ZStack {
+                                    Rectangle()
+                                        .frame(width: 40, height: 40)
+                                        .cornerRadius(10)
+                                        .foregroundStyle(Color.red.opacity(0.15))
 
-                                        Text("\(index + 1)")
-                                            .bold()
-                                    }
+                                    Text("\(index + 1)")
+                                        .bold()
+                                }
 
-                                    VStack(alignment: .leading) {
-                                        Text(item.jbno)
+                                VStack(alignment: .leading) {
+                                    Text(item.jbno)
 
-                                        Text("Quantity: \(item.kg ?? "0") KG")
-                                            .font(.footnote)
-                                            .foregroundStyle(.secondary)
-                                    }
+                                    Text("Quantity: \(item.kg ?? "0") KG")
+                                        .font(.footnote)
+                                        .foregroundStyle(.secondary)
                                 }
                             }
                         }
@@ -106,13 +104,19 @@ struct WH_Tags: View {
                 
             }
             Button("Confirm", role: .confirm) {
-                confirmTransfer(sessionid: jbtags.first?.sessionid ?? "")
+                goToFillInfo = true
             }
         } message: {
             Text("Are you sure you want to transfer these tags?")
         }
         .navigationDestination(isPresented: $gotohome) {
             WH_Dashboard()
+        }
+        .navigationDestination(isPresented: $goToFillInfo) {
+            WH_Fill_Info(
+                lotnumber: batchdatacntags.first?.lotnumber ?? "",
+                sessionID: batchdatacntags.first?.sessionid ?? ""
+            )
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -175,38 +179,6 @@ struct WH_Tags: View {
                 print(error)
             }
 
-        }.resume()
-    }
-    
-    func confirmTransfer(sessionid: String) {
-        
-        guard let url = URL(string: "https://ops.stellarseedscorp.org/App/Warehouse/confirm_transfer.php") else { return }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        let body = [
-            "sessionid": sessionid,
-        ] as [String : Any]
-
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print(error.localizedDescription)
-                return
-            }
-
-            if let data = data {
-                
-                print(String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)  ?? "")
-                
-                if String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) == "savetag" {
-                    gotohome = true
-                }
-            }
-            
         }.resume()
     }
     

@@ -79,7 +79,7 @@ struct WH_Dashboard: View {
                     
                 }
                 Section {
-                    NavigationLink(destination: WH_Home()) {
+                    NavigationLink(destination: WH_Warehouses()) {
                         HStack {
                             ZStack {
                                 Rectangle()
