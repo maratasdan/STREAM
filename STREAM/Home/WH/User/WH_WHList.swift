@@ -51,13 +51,6 @@ struct WH_WHList: View {
                             }
                         }
                     }
-                } else {
-                    HStack {
-                        fieldIcon("face.smiling.inverse")
-                        VStack(alignment: .leading) {
-                            Text("Empty Fields")
-                        }
-                    }
                 }
             }
         }

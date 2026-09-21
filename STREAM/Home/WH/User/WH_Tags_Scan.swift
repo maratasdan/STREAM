@@ -30,6 +30,7 @@ struct WH_Tags_Scan: View {
     @State private var qrCode = ""
     
     @State private var showAlertError: Bool = false
+    @State private var showSheetPleaseWait: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -50,9 +51,21 @@ struct WH_Tags_Scan: View {
         } message: {
             Text("Please make sure you scan the correct tag.")
         }
+        
+        // MARK: - Open Sheet Alert
+        .sheet(isPresented: $showSheetPleaseWait) {
+            VStack {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                    .scaleEffect(1.5)
+            }
+            .interactiveDismissDisabled()
+        }
     }
     
     func getQRData(codedata: String) {
+        
+        showSheetPleaseWait = true
         
         print(codedata)
         showScanner = false
@@ -107,6 +120,7 @@ struct WH_Tags_Scan: View {
                 
                 if String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) == "newtag" {
                     DispatchQueue.main.async {
+                        showSheetPleaseWait = false
                         dismiss()
                     }
                 }
