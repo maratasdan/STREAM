@@ -24,6 +24,8 @@ struct STREAMApp: App {
             
             CheckSession()
             
+//            CheckAccountSession()
+//            AIChatView()
 //              DR_Grid()
 //            DR_DMR()
 //            RCV_Home()

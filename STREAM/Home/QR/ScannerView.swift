@@ -7,15 +7,26 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct QRScannerView: UIViewControllerRepresentable {
 
     var completion: (String) -> Void
 
-    func makeUIViewController(context: Context) -> ScannerViewController {
+    func makeUIViewController(
+        context: Context
+    ) -> ScannerViewController {
+
         let controller = ScannerViewController()
+
         controller.completion = completion
+
         return controller
     }
 
-    func updateUIViewController(_ uiViewController: ScannerViewController, context: Context) { }
+    func updateUIViewController(
+        _ uiViewController: ScannerViewController,
+        context: Context
+    ) {
+    }
 }

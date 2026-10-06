@@ -47,6 +47,9 @@ struct RCV_Home: View {
     @State private var goToWebsite: Bool = false
     @State private var pageSelection: String = "1"
     @State private var goToCheckSession: Bool = false
+    @State private var goToQRScanner: Bool = false
+    
+    @State private var qrCode = ""
     
     @State private var showAppVersion: Bool = false
     @State private var showLogout: Bool = false
@@ -159,6 +162,32 @@ struct RCV_Home: View {
                                 }
                                 .scaleEffect(pageSelection == "4" ? 1.2 : 1)
                                 .rotationEffect(.degrees(pageSelection == "4" ? 5 : 0))
+                                .animation(.spring(response: 0.35, dampingFraction: 0.5), value: pageSelection)
+                        }
+                        .frame(width: 45, height: 45)
+                        
+                        
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(
+                                    pageSelection == "5" ?
+                                    Color(hex: "#6bd17c").opacity(0.2)
+                                    : Color.clear
+                                )
+                        
+                            Image(systemName: "qrcode")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundStyle(
+                                    pageSelection == "5" ?
+                                    Color(hex: "#6bd17c")
+                                    : Color.white
+                                )
+                                .onTapGesture {
+                                    pageSelection = "5"
+                                    goToQRScanner = true
+                                }
+                                .scaleEffect(pageSelection == "5" ? 1.2 : 1)
+                                .rotationEffect(.degrees(pageSelection == "5" ? 5 : 0))
                                 .animation(.spring(response: 0.35, dampingFraction: 0.5), value: pageSelection)
                         }
                         .frame(width: 45, height: 45)
@@ -377,9 +406,13 @@ struct RCV_Home: View {
             }
             .background(Color.black)
             .navigationBarBackButtonHidden(true)
+            .navigationDestination(isPresented: $goToQRScanner) {
+                FindUsingQR()
+            }
             .navigationDestination(isPresented: $goToMappingPage) {
                 Dashboard()
-            }.navigationDestination(isPresented: $goToCheckSession) {
+            }
+            .navigationDestination(isPresented: $goToCheckSession) {
                 CheckSession()
             }
             .alert("STREAM", isPresented: $showAppVersion) {
